@@ -64,15 +64,24 @@ def query_incidents(question: str) -> str:
 
     question_lower = question.lower()
 
-    # Simple natural language to SQL routing
-    if "critical" in question_lower:
+    if "critical" in question_lower and ("high" in question_lower or "or" in question_lower):
+        cursor.execute(
+            "SELECT * FROM incidents WHERE severity IN ('Critical','High') AND status='Open'"
+        )
+    elif "critical" in question_lower:
         cursor.execute("SELECT * FROM incidents WHERE severity='Critical'")
     elif "open" in question_lower and "high" in question_lower:
-        cursor.execute("SELECT * FROM incidents WHERE status='Open' AND severity='High'")
+        cursor.execute(
+            "SELECT * FROM incidents WHERE status='Open' AND severity='High'"
+        )
     elif "open" in question_lower:
         cursor.execute("SELECT * FROM incidents WHERE status='Open'")
     elif "resolved" in question_lower:
         cursor.execute("SELECT * FROM incidents WHERE status='Resolved'")
+    elif "alice" in question_lower:
+        cursor.execute("SELECT * FROM incidents WHERE assigned_to='Alice'")
+    elif "bob" in question_lower:
+        cursor.execute("SELECT * FROM incidents WHERE assigned_to='Bob'")
     elif any(id in question_lower for id in ["inc001","inc002","inc003","inc004","inc005"]):
         inc_id = next(id.upper() for id in ["inc001","inc002","inc003","inc004","inc005"]
                       if id in question_lower)

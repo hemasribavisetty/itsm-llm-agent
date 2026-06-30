@@ -1,0 +1,72 @@
+[
+  {
+    "id": "TC001",
+    "question": "How do I reset my password?",
+    "expected_keywords": ["account.company.com", "reset", "email"],
+    "expected_tool": "search_knowledge_base",
+    "category": "knowledge_base"
+  },
+  {
+    "id": "TC002",
+    "question": "Show me all open high severity incidents",
+    "expected_keywords": ["INC001", "INC005", "High", "Open"],
+    "expected_tool": "query_incidents",
+    "category": "incidents"
+  },
+  {
+    "id": "TC003",
+    "question": "How do I set up VPN?",
+    "expected_keywords": ["Cisco AnyConnect", "vpn.company.com"],
+    "expected_tool": "search_knowledge_base",
+    "category": "knowledge_base"
+  },
+  {
+    "id": "TC004",
+    "question": "Show me all resolved incidents",
+    "expected_keywords": ["INC004", "Resolved"],
+    "expected_tool": "query_incidents",
+    "category": "incidents"
+  },
+  {
+    "id": "TC005",
+    "question": "How do I set up multi-factor authentication?",
+    "expected_keywords": ["Microsoft Authenticator", "myaccount.microsoft.com"],
+    "expected_tool": "search_knowledge_base",
+    "category": "knowledge_base"
+  },
+  {
+    "id": "TC006",
+    "question": "What is the status of incident INC002?",
+    "expected_keywords": ["INC002", "Email server", "Critical", "Bob"],
+    "expected_tool": "query_incidents",
+    "category": "incidents"
+  },
+  {
+    "id": "TC007",
+    "question": "How do I request new hardware?",
+    "expected_keywords": ["ServiceNow", "Hardware Request", "manager"],
+    "expected_tool": "search_knowledge_base",
+    "category": "knowledge_base"
+  },
+  {
+    "id": "TC008",
+    "question": "Show me all incidents assigned to Alice",
+    "expected_keywords": ["INC001", "INC003", "Alice"],
+    "expected_tool": "query_incidents",
+    "category": "incidents"
+  },
+  {
+    "id": "TC009",
+    "question": "My laptop is running slow, what should I do?",
+    "expected_keywords": ["Restart", "Windows Update", "Disk Cleanup"],
+    "expected_tool": "search_knowledge_base",
+    "category": "knowledge_base"
+  },
+  {
+    "id": "TC010",
+    "question": "Are there any critical or high severity open incidents?",
+    "expected_keywords": ["INC001", "INC005", "High"],
+    "expected_tool": "query_incidents",
+    "category": "incidents"
+  }
+]
