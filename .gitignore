@@ -5,3 +5,5 @@ __pycache__/
 .DS_Store
 *.db
 eval/eval_results.json
+knowledge_base/
+incidents.db
