@@ -6,6 +6,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import BaseMessage, ToolMessage, AIMessage
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
+from langgraph.checkpoint.memory import MemorySaver
 from tools import web_search, query_incidents, search_knowledge_base
 
 load_dotenv()
@@ -100,14 +101,11 @@ def should_continue(state: AgentState) -> str:
 def build_agent():
     graph = StateGraph(AgentState)
 
-    # Add nodes
     graph.add_node("llm_node", llm_node)
     graph.add_node("tool_node", tool_node)
 
-    # Entry point
     graph.set_entry_point("llm_node")
 
-    # Conditional edge from LLM: either call a tool or end
     graph.add_conditional_edges(
         "llm_node",
         should_continue,
@@ -117,37 +115,42 @@ def build_agent():
         }
     )
 
-    # After tools always go back to LLM
     graph.add_edge("tool_node", "llm_node")
 
-    return graph.compile()
+    # Add memory checkpointer — persists state between turns
+    memory = MemorySaver()
+    return graph.compile(checkpointer=memory)
 
 
 # ─────────────────────────────────────────
 # 6. RUN IT
 # ─────────────────────────────────────────
-def run_agent(question: str, agent) -> str:
-    result = agent.invoke({"messages": [("user", question)]})
-    # Return the last AI message content
+def run_agent(question: str, agent, thread_id: str = "default") -> str:
+    """Run the agent with memory — thread_id keeps conversations separate."""
+    config = {"configurable": {"thread_id": thread_id}}
+    result = agent.invoke(
+        {"messages": [("user", question)]},
+        config=config
+    )
     for msg in reversed(result["messages"]):
         if isinstance(msg, AIMessage) and msg.content:
             return msg.content
     return "No answer generated."
 
-
 if __name__ == "__main__":
     agent = build_agent()
 
-    test_questions = [
-        "How do I set up VPN on my laptop?",
-        "Show me all critical incidents right now",
-        "What are the latest ransomware threats in 2026?",
-        "I can't get my MFA app working, what should I do and are there any open tickets about it?",
+    # Simulate a real multi-turn conversation — same thread_id = same memory
+    conversation = [
+        ("session_1", "Show me all critical incidents"),
+        ("session_1", "Who is assigned to it?"),          # refers to previous answer
+        ("session_1", "Are there any KB articles about email servers?"),
+        ("session_2", "Who is assigned to the critical incident?"),  # different session — no memory
     ]
 
-    for question in test_questions:
+    for thread_id, question in conversation:
         print(f"\n{'='*60}")
-        print(f"USER: {question}")
+        print(f"[Session: {thread_id}] USER: {question}")
         print("=" * 60)
-        answer = run_agent(question, agent)
+        answer = run_agent(question, agent, thread_id=thread_id)
         print(f"AGENT: {answer}")
